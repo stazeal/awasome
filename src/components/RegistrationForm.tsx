@@ -34,19 +34,28 @@ const RegistrationForm = () => {
     });
   };
 
+  const encode = (data: Record<string, any>) => {
+    return Object.keys(data)
+      .map(key => encodeURIComponent(key) + "=" + encodeURIComponent(data[key]))
+      .join("&");
+  }
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     
     try {
-      // For Netlify Forms with Next.js v5+
-      const formData = new FormData(e.currentTarget);
-      formData.append('form-name', 'registration-form');
-      formData.append('interests', formData.getAll('interests').join(', '));
+      // Prepare data for Netlify Forms
+      const submitData = {
+        'form-name': 'registration-form',
+        ...formData,
+        interests: formData.interests.join(', ')
+      };
       
       const response = await fetch('/', {
         method: 'POST',
-        body: formData,
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: encode(submitData)
       });
 
       if (response.ok) {
@@ -96,7 +105,6 @@ const RegistrationForm = () => {
               method="POST"
               onSubmit={handleSubmit}
               name="registration-form"
-              action="/success"
               data-netlify="true"
               data-netlify-honeypot="bot-field"
             >
