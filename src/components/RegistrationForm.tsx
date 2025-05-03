@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 
 export default function RegistrationForm() {
@@ -34,17 +35,17 @@ export default function RegistrationForm() {
     setLoading(true);
 
     try {
-      const formDataToSubmit = new FormData();
-      formDataToSubmit.append("name", formData.name);
-      formDataToSubmit.append("email", formData.email);
-      formDataToSubmit.append("phone", formData.phone);
-      formDataToSubmit.append("interests", formData.interests.join(", "));
-
-      // Replace with your own endpoint to handle the form submission (e.g., your backend API)
-      await fetch("/your-api-endpoint", {
+      const res = await fetch("/api/register", {
         method: "POST",
-        body: formDataToSubmit,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
       });
+
+      if (!res.ok) {
+        throw new Error("Failed to submit form");
+      }
 
       setSubmitted(true);
       setFormData({
@@ -55,6 +56,7 @@ export default function RegistrationForm() {
       });
     } catch (error) {
       console.error("Error submitting form:", error);
+      alert("Submission failed. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -84,7 +86,10 @@ export default function RegistrationForm() {
               </button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit}
+            data-netlify = "true"
+            name="contact"
+            >
               <div className="mb-4">
                 <label htmlFor="name" className="block text-gray-700 font-medium mb-2">
                   Full Name
@@ -132,46 +137,19 @@ export default function RegistrationForm() {
               <div className="mb-6">
                 <p className="block text-gray-700 font-medium mb-2">I&apos;m interested in:</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      name="interests"
-                      value="Women's Clothing"
-                      onChange={handleCheckboxChange}
-                      className="mr-2"
-                    />
-                    Women&apos;s Clothing
-                  </label>
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      name="interests"
-                      value="Men's Clothing"
-                      onChange={handleCheckboxChange}
-                      className="mr-2"
-                    />
-                    Men&apos;s Clothing
-                  </label>
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      name="interests"
-                      value="Accessories"
-                      onChange={handleCheckboxChange}
-                      className="mr-2"
-                    />
-                    Accessories
-                  </label>
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      name="interests"
-                      value="New Collections"
-                      onChange={handleCheckboxChange}
-                      className="mr-2"
-                    />
-                    New Collections
-                  </label>
+                  {["Women's Clothing", "Men's Clothing", "Accessories", "New Collections"].map((interest) => (
+                    <label key={interest} className="flex items-center">
+                      <input
+                        type="checkbox"
+                        name="interests"
+                        value={interest}
+                        checked={formData.interests.includes(interest)}
+                        onChange={handleCheckboxChange}
+                        className="mr-2"
+                      />
+                      {interest}
+                    </label>
+                  ))}
                 </div>
               </div>
 
