@@ -76,7 +76,7 @@ const RegistrationForm = () => {
               <div className="text-green-600 text-5xl mb-4">✓</div>
               <h3 className="text-2xl font-bold mb-2">Thank You!</h3>
               <p className="text-gray-600 mb-4">
-                Your registration has been received. We'll be in touch soon.
+                Your registration has been received. We&apos;ll be in touch soon.
               </p>
               <button
                 onClick={() => setSubmitted(false)}
@@ -92,11 +92,10 @@ const RegistrationForm = () => {
               data-netlify="true"
               data-netlify-honeypot="bot-field"
             >
-              {/* Required for Netlify to detect the form */}
               <input type="hidden" name="form-name" value="registration-form" />
               <p hidden>
                 <label>
-                  Don’t fill this out: <input name="bot-field" />
+                  Don&apos;t fill this out: <input name="bot-field" />
                 </label>
               </p>
 
@@ -136,29 +135,29 @@ const RegistrationForm = () => {
                 />
               </div>
 
-              <p className="block text-gray-700 font-medium mb-2">I'm interested in:</p>
+              <p className="block text-gray-700 font-medium mb-2">I&apos;m interested in:</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-6">
                 <label className="flex items-center">
                   <input
                     type="checkbox"
                     name="interests"
-                    value="Women's Clothing"
+                    value="Women&apos;s Clothing"
                     checked={formData.interests.includes("Women's Clothing")}
                     onChange={handleCheckboxChange}
                     className="mr-2"
                   />
-                  Women's Clothing
+                  Women&apos;s Clothing
                 </label>
                 <label className="flex items-center">
                   <input
                     type="checkbox"
                     name="interests"
-                    value="Men's Clothing"
+                    value="Men&apos;s Clothing"
                     checked={formData.interests.includes("Men's Clothing")}
                     onChange={handleCheckboxChange}
                     className="mr-2"
                   />
-                  Men's Clothing
+                  Men&apos;s Clothing
                 </label>
               </div>
 
@@ -174,7 +173,6 @@ const RegistrationForm = () => {
         </div>
       </div>
 
-      {/* Hidden form so Netlify can register it */}
       <form name="registration-form" netlify hidden>
         <input type="text" name="name" />
         <input type="email" name="email" />
