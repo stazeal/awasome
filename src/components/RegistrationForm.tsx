@@ -35,13 +35,13 @@ export default function RegistrationForm() {
 
     try {
       const formDataToSubmit = new FormData();
-      formDataToSubmit.append("form-name", "registration");
       formDataToSubmit.append("name", formData.name);
       formDataToSubmit.append("email", formData.email);
       formDataToSubmit.append("phone", formData.phone);
       formDataToSubmit.append("interests", formData.interests.join(", "));
 
-      await fetch("/", {
+      // Replace with your own endpoint to handle the form submission (e.g., your backend API)
+      await fetch("/your-api-endpoint", {
         method: "POST",
         body: formDataToSubmit,
       });
@@ -84,18 +84,7 @@ export default function RegistrationForm() {
               </button>
             </div>
           ) : (
-            <form
-              onSubmit={handleSubmit}
-              name="registration"
-              method="POST"
-              data-netlify="true"
-              netlify-honeypot="bot-field"
-            >
-              <input type="hidden" name="form-name" value="registration" />
-              <div hidden>
-                <input name="bot-field" />
-              </div>
-
+            <form onSubmit={handleSubmit}>
               <div className="mb-4">
                 <label htmlFor="name" className="block text-gray-700 font-medium mb-2">
                   Full Name
