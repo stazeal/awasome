@@ -37,18 +37,16 @@ const RegistrationForm = () => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
+    
     try {
-      const formBody = new URLSearchParams();
-      formBody.append('form-name', 'registration-form');
-      formBody.append('name', formData.name);
-      formBody.append('email', formData.email);
-      formBody.append('phone', formData.phone);
-      formBody.append('interests', formData.interests.join(', '));
-
+      // For Netlify Forms with Next.js v5+
+      const formData = new FormData(e.currentTarget);
+      formData.append('form-name', 'registration-form');
+      formData.append('interests', formData.getAll('interests').join(', '));
+      
       const response = await fetch('/', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: formBody.toString(),
+        body: formData,
       });
 
       if (response.ok) {
@@ -95,13 +93,15 @@ const RegistrationForm = () => {
             </div>
           ) : (
             <form
+              method="POST"
               onSubmit={handleSubmit}
               name="registration-form"
+              action="/success"
               data-netlify="true"
               data-netlify-honeypot="bot-field"
             >
               <input type="hidden" name="form-name" value="registration-form" />
-              <p hidden>
+              <p style={{ display: 'none' }}>
                 <label>
                   Don&apos;t fill this out: <input name="bot-field" />
                 </label>
@@ -111,6 +111,7 @@ const RegistrationForm = () => {
                 <label htmlFor="name" className="block font-medium text-gray-700 mb-1">Name</label>
                 <input
                   type="text"
+                  id="name"
                   name="name"
                   required
                   value={formData.name}
@@ -123,6 +124,7 @@ const RegistrationForm = () => {
                 <label htmlFor="email" className="block font-medium text-gray-700 mb-1">Email</label>
                 <input
                   type="email"
+                  id="email"
                   name="email"
                   required
                   value={formData.email}
@@ -135,6 +137,7 @@ const RegistrationForm = () => {
                 <label htmlFor="phone" className="block font-medium text-gray-700 mb-1">Phone</label>
                 <input
                   type="tel"
+                  id="phone"
                   name="phone"
                   required
                   value={formData.phone}
@@ -179,16 +182,6 @@ const RegistrationForm = () => {
             </form>
           )}
         </div>
-      </div>
-
-      {/* Fix for the netlify attribute error - use data attributes instead */}
-      <div hidden>
-        <form name="registration-form" data-netlify="true">
-          <input type="text" name="name" />
-          <input type="email" name="email" />
-          <input type="tel" name="phone" />
-          <input type="text" name="interests" />
-        </form>
       </div>
     </section>
   );
