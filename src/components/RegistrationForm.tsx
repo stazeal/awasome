@@ -1,22 +1,30 @@
 'use client';
-import { useState } from 'react';
+import { useState, ChangeEvent, FormEvent } from 'react';
+
+// Define types for form data
+interface FormData {
+  name: string;
+  email: string;
+  phone: string;
+  interests: string[];
+}
 
 const RegistrationForm = () => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
     phone: '',
     interests: [],
   });
-  const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCheckboxChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = e.target;
     setFormData(prev => {
       const updatedInterests = checked
@@ -26,7 +34,7 @@ const RegistrationForm = () => {
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     try {
@@ -141,7 +149,7 @@ const RegistrationForm = () => {
                   <input
                     type="checkbox"
                     name="interests"
-                    value="Women&apos;s Clothing"
+                    value="Women's Clothing"
                     checked={formData.interests.includes("Women's Clothing")}
                     onChange={handleCheckboxChange}
                     className="mr-2"
@@ -152,7 +160,7 @@ const RegistrationForm = () => {
                   <input
                     type="checkbox"
                     name="interests"
-                    value="Men&apos;s Clothing"
+                    value="Men's Clothing"
                     checked={formData.interests.includes("Men's Clothing")}
                     onChange={handleCheckboxChange}
                     className="mr-2"
@@ -173,12 +181,15 @@ const RegistrationForm = () => {
         </div>
       </div>
 
-      <form name="registration-form" netlify hidden>
-        <input type="text" name="name" />
-        <input type="email" name="email" />
-        <input type="tel" name="phone" />
-        <input type="text" name="interests" />
-      </form>
+      {/* Fix for the netlify attribute error - use data attributes instead */}
+      <div hidden>
+        <form name="registration-form" data-netlify="true">
+          <input type="text" name="name" />
+          <input type="email" name="email" />
+          <input type="tel" name="phone" />
+          <input type="text" name="interests" />
+        </form>
+      </div>
     </section>
   );
 };
