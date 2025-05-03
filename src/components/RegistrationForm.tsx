@@ -1,60 +1,62 @@
-"use client";
-import { useState } from "react";
+'use client';
+import { useState } from 'react';
 
-export default function RegistrationForm() {
+const RegistrationForm = () => {
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    interests: [] as string[],
+    name: '',
+    email: '',
+    phone: '',
+    interests: [],
   });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCheckboxChange = (e) => {
     const { value, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      interests: checked
+    setFormData(prev => {
+      const updatedInterests = checked
         ? [...prev.interests, value]
-        : prev.interests.filter((interest) => interest !== value),
-    }));
+        : prev.interests.filter(i => i !== value);
+      return { ...prev, interests: updatedInterests };
+    });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
     try {
-      const formDataToSubmit = new FormData();
-      formDataToSubmit.append("name", formData.name);
-      formDataToSubmit.append("email", formData.email);
-      formDataToSubmit.append("phone", formData.phone);
-      formDataToSubmit.append("interests", formData.interests.join(", "));
+      const formBody = new URLSearchParams();
+      formBody.append('form-name', 'registration-form');
+      formBody.append('name', formData.name);
+      formBody.append('email', formData.email);
+      formBody.append('phone', formData.phone);
+      formBody.append('interests', formData.interests.join(', '));
 
-      // Replace with your own endpoint to handle the form submission (e.g., your backend API)
-      await fetch("/your-api-endpoint", {
-        method: "POST",
-        body: formDataToSubmit,
+      const response = await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formBody.toString(),
       });
 
-      setSubmitted(true);
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        interests: [],
-      });
+      if (response.ok) {
+        setSubmitted(true);
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          interests: [],
+        });
+      } else {
+        throw new Error('Form submission failed');
+      }
     } catch (error) {
-      console.error("Error submitting form:", error);
+      console.error('Error submitting form:', error);
+      alert('There was an error submitting the form. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -74,7 +76,7 @@ export default function RegistrationForm() {
               <div className="text-green-600 text-5xl mb-4">✓</div>
               <h3 className="text-2xl font-bold mb-2">Thank You!</h3>
               <p className="text-gray-600 mb-4">
-                Your registration has been received. We&apos;ll be in touch soon with more information.
+                Your registration has been received. We'll be in touch soon.
               </p>
               <button
                 onClick={() => setSubmitted(false)}
@@ -84,131 +86,103 @@ export default function RegistrationForm() {
               </button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit}>
-              <div className="mb-4">
-                <label htmlFor="name" className="block text-gray-700 font-medium mb-2">
-                  Full Name
+            <form
+              onSubmit={handleSubmit}
+              name="registration-form"
+              data-netlify="true"
+              data-netlify-honeypot="bot-field"
+            >
+              {/* Required for Netlify to detect the form */}
+              <input type="hidden" name="form-name" value="registration-form" />
+              <p hidden>
+                <label>
+                  Don’t fill this out: <input name="bot-field" />
                 </label>
+              </p>
+
+              <div className="mb-4">
+                <label htmlFor="name" className="block font-medium text-gray-700 mb-1">Name</label>
                 <input
                   type="text"
-                  id="name"
                   name="name"
+                  required
                   value={formData.name}
                   onChange={handleChange}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-gray-300 rounded px-3 py-2"
                 />
               </div>
 
               <div className="mb-4">
-                <label htmlFor="email" className="block text-gray-700 font-medium mb-2">
-                  Email Address
-                </label>
+                <label htmlFor="email" className="block font-medium text-gray-700 mb-1">Email</label>
                 <input
                   type="email"
-                  id="email"
                   name="email"
+                  required
                   value={formData.email}
                   onChange={handleChange}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-gray-300 rounded px-3 py-2"
                 />
               </div>
 
               <div className="mb-4">
-                <label htmlFor="phone" className="block text-gray-700 font-medium mb-2">
-                  Phone Number
-                </label>
+                <label htmlFor="phone" className="block font-medium text-gray-700 mb-1">Phone</label>
                 <input
                   type="tel"
-                  id="phone"
                   name="phone"
+                  required
                   value={formData.phone}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-gray-300 rounded px-3 py-2"
                 />
               </div>
 
-              <div className="mb-6">
-                <p className="block text-gray-700 font-medium mb-2">I&apos;m interested in:</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      name="interests"
-                      value="Women's Clothing"
-                      onChange={handleCheckboxChange}
-                      className="mr-2"
-                    />
-                    Women&apos;s Clothing
-                  </label>
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      name="interests"
-                      value="Men's Clothing"
-                      onChange={handleCheckboxChange}
-                      className="mr-2"
-                    />
-                    Men&apos;s Clothing
-                  </label>
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      name="interests"
-                      value="Accessories"
-                      onChange={handleCheckboxChange}
-                      className="mr-2"
-                    />
-                    Accessories
-                  </label>
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      name="interests"
-                      value="New Collections"
-                      onChange={handleCheckboxChange}
-                      className="mr-2"
-                    />
-                    New Collections
-                  </label>
-                </div>
+              <p className="block text-gray-700 font-medium mb-2">I'm interested in:</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-6">
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name="interests"
+                    value="Women's Clothing"
+                    checked={formData.interests.includes("Women's Clothing")}
+                    onChange={handleCheckboxChange}
+                    className="mr-2"
+                  />
+                  Women's Clothing
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name="interests"
+                    value="Men's Clothing"
+                    checked={formData.interests.includes("Men's Clothing")}
+                    onChange={handleCheckboxChange}
+                    className="mr-2"
+                  />
+                  Men's Clothing
+                </label>
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-indigo-600 text-white font-medium py-3 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-300"
+                className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition"
               >
-                {loading ? (
-                  <span className="flex items-center justify-center">
-                    <svg
-                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    Submitting...
-                  </span>
-                ) : (
-                  "Register Now"
-                )}
+                {loading ? 'Submitting...' : 'Send Message'}
               </button>
-
-              <p className="text-sm text-gray-500 mt-4 text-center">
-                By registering, you agree to receive marketing communications from us. You can unsubscribe at any time.
-              </p>
             </form>
           )}
         </div>
       </div>
+
+      {/* Hidden form so Netlify can register it */}
+      <form name="registration-form" netlify hidden>
+        <input type="text" name="name" />
+        <input type="email" name="email" />
+        <input type="tel" name="phone" />
+        <input type="text" name="interests" />
+      </form>
     </section>
   );
-}
+};
+
+export default RegistrationForm;
